@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luyện Thi Tiếng Anh - Ms Lê Hằng English</title>
+  <!-- Google Fonts: Nunito & Quicksand -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    :root {
+      --primary-purple: #8854C0;
+      --primary-pink: #FD79A8;
+      --primary-yellow: #FDCB6E;
+      --primary-teal: #00C9A7;
+      --primary-blue: #0984E3;
+      --correct-green: #00D26A;
+      --correct-green-shadow: #00a352;
+      --wrong-red: #FF4757;
+      --wrong-red-shadow: #d63031;
+      --card-bg: rgba(255, 255, 255, 0.96);
+      --text-main: #2D3436;
+      --text-muted: #636E72;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Nunito', 'Quicksand', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      min-height: 100vh;
+      color: var(--text-main);
+      background: linear-gradient(180deg, #bbf2f6 0%, #d8e8f8 25%, #fedacb 60%, #fed1c0 85%, #fca289 100%);
+      position: relative;
+      overflow-x: hidden;
+      padding: 16px 12px 140px;
+    }
+
+    /* Sky background decorations */
+    .sky-decorations {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .sun-glow {
+      position: absolute;
+      top: 25px;
+      left: -20px;
+      width: 140px;
+      height: 140px;
+      background: radial-gradient(circle, #ffeaa7 40%, rgba(255, 234, 167, 0.4) 70%, transparent 100%);
+      border-radius: 50%;
+      filter: blur(10px);
+      animation: pulseSun 6s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulseSun {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      100% { transform: scale(1.1); opacity: 1; }
+    }
+
+    .floating-cloud {
+      position: absolute;
+      fill: rgba(255, 255, 255, 0.7);
+      animation: floatCloud linear infinite;
+    }
+
+    .cloud-1 { top: 60px; left: -120px; width: 140px; animation-duration: 48s; }
+    .cloud-2 { top: 180px; left: -160px; width: 180px; animation-duration: 65s; animation-delay: -25s; }
+
+    @keyframes floatCloud {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(calc(100vw + 250px)); }
+    }
+
+    /* Cityscape background at bottom */
+    .city-backdrop {
+      position: fixed;
+      bottom: 42px;
+      left: 0;
+      width: 100%;
+      height: 150px;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.55;
+      background-repeat: repeat-x;
+      background-position: bottom center;
+      background-size: 550px 140px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 550 140'%3E%3Cpath fill='%23a5cbf5' d='M0,140 L0,70 L30,70 L30,50 L45,50 L45,30 L60,30 L60,70 L90,70 L90,140 Z M100,140 L100,40 L140,40 L140,140 Z M150,140 L150,65 L180,65 L180,140 Z M190,140 L190,20 L230,20 L230,140 Z M240,140 L240,55 L280,55 L280,140 Z M290,140 L290,35 L330,35 L330,140 Z M340,140 L340,75 L380,75 L380,140 Z M390,140 L390,15 L430,15 L430,140 Z M440,140 L440,60 L490,60 L490,140 Z M500,140 L500,45 L540,45 L540,140 Z'/%3E%3C/svg%3E");
+    }
+
+    /* Road with curbs */
+    .bottom-road {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 44px;
+      background: #4b4b4b;
+      border-top: 5px solid #2ed573;
+      z-index: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      overflow: hidden;
+    }
+
+    .road-curb {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: repeating-linear-gradient(90deg, #ff4757, #ff4757 25px, #ffffff 25px, #ffffff 50px);
+    }
+
+    .road-line {
+      height: 6px;
+      width: 45px;
+      background: #ffffff;
+      border-radius: 3px;
+      opacity: 0.9;
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Top Sticky Bar */
+    .top-sticky-bar {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 10px 16px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      border: 2px solid #ffffff;
+      margin-bottom: 14px;
+      backdrop-filter: blur(10px);
+    }
+
+    .progress-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .star-score-pill {
+      background: linear-gradient(135deg, #ff7675, #e84393);
+      color: white;
+      font-weight: 900;
+      font-size: 0.88rem;
+      padding: 4px 12px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 3px 0 #d63031;
+      white-space: nowrap;
+    }
+
+    .progress-track {
+      flex: 1;
+      height: 14px;
+      background: #E2E8F0;
+      border-radius: 999px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #00C9A7, #00D26A);
+      border-radius: 999px;
+      transition: width 0.4s ease;
+    }
+
+    .progress-count-pill {
+      background: #00C9A7;
+      color: white;
+      font-weight: 900;
+      font-size: 0.88rem;
+      padding: 4px 12px;
+      border-radius: 999px;
+      box-shadow: 0 3px 0 #008770;
+      white-space: nowrap;
+    }
+
+    .teacher-contact-pill {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #2D3436;
+      padding-top: 4px;
+      border-top: 1px dashed #E2E8F0;
+    }
+
+    .teacher-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 800;
+      color: #6C5CE7;
+    }
+
+    .phone-tag {
+      background: #FF7675;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 0.8rem;
+    }
+
+    /* Unit Card Banner */
+    .unit-hero-card {
+      background: #FFFFFF;
+      border-radius: 28px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      border: 3px solid #FFFFFF;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-content {
+      max-width: 68%;
+    }
+
+    .unit-badge {
+      display: inline-block;
+      background: #0984E3;
+      color: white;
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 900;
+      letter-spacing: 0.4px;
+      margin-bottom: 8px;
+      box-shadow: 0 3px 0 #0764ad;
+    }
+
+    .hero-title {
+      font-size: 1.7rem;
+      font-weight: 900;
+      color: #0984E3;
+      line-height: 1.25;
+      margin-bottom: 6px;
+    }
+
+    .hero-subtitle {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #636E72;
+      line-height: 1.5;
+    }
+
+    .hero-graphic {
+      width: 105px;
+      height: 105px;
+      background: radial-gradient(circle, #E1F0FF 60%, #CCE5FF 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 15px rgba(9, 132, 227, 0.15);
+      position: relative;
+    }
+
+    .hero-graphic svg {
+      width: 70px;
+      height: 70px;
+    }
+
+    /* Very Important Reminder Box */
+    .warning-box {
+      background: linear-gradient(135deg, #FFF9E6, #FFF0C2);
+      border: 3px solid #FDCB6E;
+      border-radius: 22px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 20px rgba(253, 203, 110, 0.35);
+      position: relative;
+    }
+
+    .warning-title {
+      font-size: 1.05rem;
+      font-weight: 900;
+      color: #D35400;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .warning-text {
+      font-size: 0.96rem;
+      line-height: 1.55;
+      font-weight: 700;
+      color: #7A4100;
+    }
+
+    .warning-tag {
+      display: inline-block;
+      margin-top: 8px;
+      background: #E17055;
+      color: white;
+      padding: 3px 12px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 0.85rem;
+    }
+
+    /* Question Cards */
+    .question-card {
+      background: var(--card-bg);
+      border-radius: 26px;
+      padding: 22px 22px;
+      margin-bottom: 24px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      border: 3px solid #FFFFFF;
+      transition: transform 0.2s ease;
+      position: relative;
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .question-num {
+      background: linear-gradient(135deg, #6c5ce7, #8854C0);
+      color: white;
+      font-size: 0.95rem;
+      font-weight: 900;
+      padding: 5px 16px;
+      border-radius: 14px;
+      box-shadow: 0 3px 0 #4834d4;
+    }
+
+    .question-type-badge {
+      font-size: 0.82rem;
+      font-weight: 800;
+      padding: 4px 14px;
+      border-radius: 12px;
+      background: #E8F8F5;
+      color: #00A884;
+      border: 1.5px solid #00C9A7;
+    }
+
+    .question-content {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #2D3436;
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    /* Phonetics highlight styling */
+    .phonetic-u, u {
+      color: #D63031 !important;
+      text-decoration: underline !important;
+      text-decoration-thickness: 3px !important;
+      text-underline-offset: 4px !important;
+      font-weight: 900;
+    }
+
+    /* Option Buttons (3D Gamified) */
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    @media (min-width: 600px) {
+      .options-grid.two-cols {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .option-btn {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      background: #FFFFFF;
+      border: 2.5px solid #E2E8F0;
+      border-radius: 18px;
+      padding: 12px 18px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #2D3436;
+      cursor: pointer;
+      text-align: left;
+      transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.15s ease;
+      box-shadow: 0 5px 0 #CBD5E1;
+      position: relative;
+      outline: none;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      transform: translateY(-2px) scale(1.02);
+      border-color: #A29BFE;
+      box-shadow: 0 7px 0 #a29bfe;
+      background: #FDFBFF;
+    }
+
+    .option-btn:active:not(:disabled) {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #CBD5E1;
+    }
+
+    .option-key {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      min-width: 32px;
+      background: #F1F2F6;
+      color: #6C5CE7;
+      border-radius: 10px;
+      margin-right: 12px;
+      font-weight: 900;
+      font-size: 0.95rem;
+      border: 1.5px solid #DFE4EA;
+    }
+
+    .option-btn.correct {
+      background: #E8FBF0 !important;
+      border-color: var(--correct-green) !important;
+      color: #056636 !important;
+      box-shadow: 0 5px 0 var(--correct-green-shadow) !important;
+    }
+
+    .option-btn.correct .option-key {
+      background: var(--correct-green);
+      color: white;
+      border-color: var(--correct-green-shadow);
+    }
+
+    .option-btn.wrong {
+      background: #FFF0F2 !important;
+      border-color: var(--wrong-red) !important;
+      color: #A31221 !important;
+      box-shadow: 0 5px 0 var(--wrong-red-shadow) !important;
+      animation: shake 0.45s ease-in-out;
+    }
+
+    .option-btn.wrong .option-key {
+      background: var(--wrong-red);
+      color: white;
+      border-color: var(--wrong-red-shadow);
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+
+    /* =========================================================================
+       EXPLANATION BOX - EXACT MATCH OF SCREENSHOT 1
+       ========================================================================= */
+    .explanation-box {
+      margin-top: 20px;
+      background: #FFFFFF;
+      border: 2px dashed #A29BFE;
+      border-radius: 22px;
+      padding: 18px 20px;
+      animation: slideDown 0.35s ease-out;
+      box-shadow: 0 8px 24px rgba(108, 92, 231, 0.08);
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .exp-title {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: #E65100;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    /* Translation Bubble */
+    .exp-translation-bubble {
+      background: #FFF9E6;
+      border-left: 5px solid #FDCB6E;
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-size: 0.96rem;
+      font-weight: 700;
+      color: #2D3436;
+      line-height: 1.5;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .exp-translation-bubble .icon {
+      font-size: 1.25rem;
+    }
+
+    .exp-section-title {
+      font-size: 0.98rem;
+      font-weight: 900;
+      color: #2D3436;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* 4-Option Analysis Grid (2x2 cards) */
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    @media (min-width: 620px) {
+      .analysis-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .analysis-card {
+      background: #FFFFFF;
+      border: 1.8px solid #E2E8F0;
+      border-radius: 16px;
+      padding: 10px 14px;
+      font-size: 0.92rem;
+      line-height: 1.5;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+
+    .analysis-word {
+      font-weight: 900;
+      font-size: 1rem;
+      color: #0984E3;
+      margin-right: 4px;
+    }
+
+    .analysis-word.green {
+      color: #00B894;
+    }
+
+    .badge-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 8px;
+      font-size: 0.76rem;
+      font-weight: 800;
+      margin: 0 4px;
+      vertical-align: middle;
+    }
+
+    .badge-wrong {
+      background: #FEE2E2;
+      color: #DC2626;
+      border: 1px solid #FCA5A5;
+    }
+
+    .badge-structure {
+      background: #EDE9FE;
+      color: #6D28D9;
+      border: 1px solid #DDD6FE;
+    }
+
+    .badge-correct {
+      background: #D1FAE5;
+      color: #059669;
+      border: 1px solid #A7F3D0;
+    }
+
+    .analysis-meaning {
+      font-weight: 700;
+      color: #7A4100;
+    }
+
+    .exp-rule-row {
+      margin-bottom: 12px;
+      font-size: 0.96rem;
+      line-height: 1.6;
+      color: #2D3436;
+      font-weight: 600;
+    }
+
+    .exp-rule-row .check-label {
+      font-weight: 900;
+      color: #00A884;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-right: 6px;
+    }
+
+    .exp-rule-pill {
+      background: #FFF3CD;
+      color: #856404;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 10px;
+      margin: 0 4px;
+      display: inline-block;
+    }
+
+    .exp-highlight-green {
+      background: #E8F8F5;
+      color: #00A884;
+      font-weight: 900;
+      padding: 2px 8px;
+      border-radius: 8px;
+      display: inline-block;
+      margin: 0 2px;
+    }
+
+    .exp-wrong-row {
+      font-size: 0.96rem;
+      line-height: 1.6;
+      color: #2D3436;
+      font-weight: 600;
+    }
+
+    .exp-wrong-row .cross-label {
+      font-weight: 900;
+      color: #D63031;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-right: 6px;
+    }
+
+    .exp-wrong-tag {
+      background: #FFEAEA;
+      color: #D63031;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 8px;
+      display: inline-block;
+      margin: 0 3px;
+    }
+
+    /* Submit Section */
+    .submit-section {
+      text-align: center;
+      margin-top: 36px;
+      margin-bottom: 50px;
+    }
+
+    .submit-btn {
+      background: linear-gradient(135deg, #00C9A7, #00B894);
+      color: white;
+      font-size: 1.25rem;
+      font-weight: 900;
+      padding: 16px 48px;
+      border: none;
+      border-radius: 999px;
+      box-shadow: 0 8px 0 #008770, 0 15px 25px rgba(0, 201, 167, 0.4);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      letter-spacing: 0.5px;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 11px 0 #008770, 0 18px 30px rgba(0, 201, 167, 0.5);
+    }
+
+    .submit-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 4px 0 #008770;
+    }
+
+    /* Result Modal */
+    .result-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.65);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 16px;
+      backdrop-filter: blur(5px);
+    }
+
+    .result-card {
+      background: white;
+      border-radius: 30px;
+      padding: 32px 26px;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+      position: relative;
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.85); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .result-emoji {
+      font-size: 3.5rem;
+      margin-bottom: 10px;
+      animation: bounce 1.5s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .result-score {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #6C5CE7;
+      margin-bottom: 12px;
+    }
+
+    .result-feedback {
+      background: #F8F9FE;
+      border-radius: 18px;
+      padding: 16px;
+      font-size: 1.05rem;
+      line-height: 1.6;
+      font-weight: 700;
+      color: #2D3436;
+      margin-bottom: 24px;
+      border: 2px dashed #A29BFE;
+    }
+
+    .retry-btn {
+      background: linear-gradient(135deg, #FDCB6E, #E17055);
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 900;
+      padding: 12px 36px;
+      border: none;
+      border-radius: 999px;
+      box-shadow: 0 6px 0 #D35400;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .retry-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 0 #D35400;
+    }
+
+    .retry-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 3px 0 #D35400;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sky Decorations -->
+  <div class="sky-decorations">
+    <div class="sun-glow"></div>
+    <svg class="floating-cloud cloud-1" viewBox="0 0 100 60">
+      <path d="M20,40 Q10,40 10,30 Q10,20 25,20 Q30,10 45,10 Q60,10 65,20 Q80,20 80,30 Q90,30 90,40 Q90,50 80,50 L20,50 Z"/>
+    </svg>
+    <svg class="floating-cloud cloud-2" viewBox="0 0 100 60">
+      <path d="M20,40 Q10,40 10,30 Q10,20 25,20 Q30,10 45,10 Q60,10 65,20 Q80,20 80,30 Q90,30 90,40 Q90,50 80,50 L20,50 Z"/>
+    </svg>
+  </div>
+  <div class="city-backdrop"></div>
+  <div class="bottom-road">
+    <div class="road-curb"></div>
+    <div class="road-line"></div>
+    <div class="road-line"></div>
+    <div class="road-line"></div>
+    <div class="road-line"></div>
+    <div class="road-line"></div>
+    <div class="road-line"></div>
+    <div class="road-line"></div>
+  </div>
+
+  <div class="container">
+
+    <!-- Top Sticky Bar -->
+    <div class="top-sticky-bar">
+      <div class="progress-row">
+        <div class="star-score-pill">
+          <span>⭐</span> <span id="star-score-text">0 / 20</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-bar-fill"></div>
+        </div>
+        <div class="progress-count-pill" id="progress-ratio-text">0 / 20</div>
+      </div>
+      <div class="teacher-contact-pill">
+        <div class="teacher-badge">
+          <span>👩‍🏫</span> Giáo viên tạo: <strong>Ms Lê Hằng English</strong>
+        </div>
+        <div>
+          <span>Chuyên luyện thi HSG & Luyện thi vào lớp 10 chất lượng cao</span> • <span class="phone-tag">☎️ 0936.322.809</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Unit Card Banner (Image 2 Style) -->
+    <div class="unit-hero-card">
+      <div class="hero-content">
+        <div class="unit-badge">🚆 UNIT: PRONUNCIATION MASTERY · VOWEL SOUNDS</div>
+        <h1 class="hero-title">Phonetics Challenge</h1>
+        <div class="hero-subtitle">Exercise: Choose the word (A, B, C, or D) whose underlined part is pronounced differently from the others.</div>
+      </div>
+      <div class="hero-graphic">
+        <svg viewBox="0 0 100 100">
+          <rect x="25" y="20" width="30" height="70" rx="4" fill="#0984E3"/>
+          <polygon points="25,20 40,5 55,20" fill="#0984E3"/>
+          <rect x="60" y="45" width="25" height="45" rx="3" fill="#74B9FF"/>
+          <!-- Windows -->
+          <circle cx="33" cy="32" r="3" fill="#FFF"/>
+          <circle cx="47" cy="32" r="3" fill="#FFF"/>
+          <circle cx="33" cy="46" r="3" fill="#FFF"/>
+          <circle cx="47" cy="46" r="3" fill="#FFF"/>
+          <circle cx="33" cy="60" r="3" fill="#FFF"/>
+          <circle cx="47" cy="60" r="3" fill="#FFF"/>
+          <circle cx="33" cy="74" r="3" fill="#FFF"/>
+          <circle cx="47" cy="74" r="3" fill="#FFF"/>
+          <circle cx="68" cy="56" r="2.5" fill="#FFF"/>
+          <circle cx="77" cy="56" r="2.5" fill="#FFF"/>
+          <circle cx="68" cy="68" r="2.5" fill="#FFF"/>
+          <circle cx="77" cy="68" r="2.5" fill="#FFF"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Very Important Reminder Box -->
+    <div class="warning-box">
+      <div class="warning-title">⚠️ LỜI NHẮC CỰC KỲ QUAN TRỌNG ⚠️</div>
+      <div class="warning-text">
+        Chỉ có đọc kỹ giải thích ngay sau mỗi câu, sau đó ghi lại từ vựng/cấu trúc mới vào vở để học thì mới thực sự giỏi lên.<br>
+        Làm cho xong mà không đọc giải thích hay đọc qua loa không ghi chép thì chỉ tốn thời gian vô ích!
+      </div>
+      <div class="warning-tag">Kéo tới đâu, làm tới đó! *</div>
+    </div>
+
+    <!-- QUESTIONS CONTAINER -->
+    <div id="quiz-container"></div>
+
+    <!-- Submit Section -->
+    <div class="submit-section">
+      <button class="submit-btn" onclick="submitQuiz()">🎉 NỘP BÀI KIỂM TRA</button>
+    </div>
+
+  </div>
+
+  <!-- RESULT MODAL -->
+  <div id="result-modal" class="result-modal">
+    <div class="result-card">
+      <div id="result-emoji" class="result-emoji">🌟</div>
+      <div id="result-score" class="result-score">0 / 20</div>
+      <div id="result-feedback" class="result-feedback"></div>
+      <button class="retry-btn" onclick="retryQuiz()">🔄 Làm lại bài</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [{"id": 1, "question": "Choose the word whose underlined part is pronounced differently from the others:", "options": [{"key": "A", "text": "<u>A</u>mong", "raw": "Among"}, {"key": "B", "text": "carr<u>o</u>t", "raw": "carrot"}, {"key": "C", "text": "j<u>our</u>ney", "raw": "journey"}, {"key": "D", "text": "Septemb<u>er</u>", "raw": "September"}], "correct": "C", "explanation": {"translation": "Chọn từ có phần gạch chân phát âm khác với các từ còn lại trong câu.", "cards": [{"word": "Among", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= ở giữa, trong số (/əˈmʌŋ/)"}, {"word": "carrot", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= củ cà rốt (/ˈkær.ət/)"}, {"word": "journey", "isCorrect": true, "badgeText": "/ɜː/ - nguyên âm dài", "badgeType": "badge-correct", "meaning": "= chuyến đi, hành trình (/ˈdʒɜː.ni/)"}, {"word": "September", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= tháng Chín (/sepˈtem.bər/)"}], "whyCorrect": {"ruleTitle": "Phân biệt nguyên âm /ɜː/ dài và /ə/ ngắn", "detail": "Từ <span class='exp-highlight-green'>journey</span> có phần gạch chân 'our' được phát âm là nguyên âm dài <span class='exp-highlight-green'>/ɜː/</span> (uốn lưỡi nhẹ, kéo dài hơi)."}, "whyWrong": [{"word": "Among", "reason": "chữ 'A' đứng ở âm tiết không nhấn trọng âm, phát âm là /ə/ nhẹ."}, {"word": "carrot", "reason": "chữ 'o' ở âm tiết thứ hai không mang trọng âm, phát âm là /ə/."}, {"word": "September", "reason": "đuôi 'er' không nhấn trọng âm, phát âm là /ə/."}]}}, {"id": 2, "question": "Choose the word whose underlined part is pronounced differently from the others:", "options": [{"key": "A", "text": "natur<u>al</u>", "raw": "natural"}, {"key": "B", "text": "l<u>ear</u>n", "raw": "learn"}, {"key": "C", "text": "<u>a</u>ssistant", "raw": "assistant"}, {"key": "D", "text": "<u>a</u>bility", "raw": "ability"}], "correct": "B", "explanation": {"translation": "Chọn từ có phần gạch chân phát âm khác với các từ còn lại.", "cards": [{"word": "natural", "isCorrect": false, "badgeText": "/əl/ (/ə/)", "badgeType": "badge-structure", "meaning": "= tự nhiên (/ˈnætʃ.ər.əl/)"}, {"word": "learn", "isCorrect": true, "badgeText": "/ɜː/ - nguyên âm dài", "badgeType": "badge-correct", "meaning": "= học tập (/lɜːn/)"}, {"word": "assistant", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= trợ lý (/əˈsɪs.tənt/)"}, {"word": "ability", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= khả năng, năng lực (/əˈbɪl.ə.ti/)"}], "whyCorrect": {"ruleTitle": "Phát âm tổ hợp 'ear' mang trọng âm", "detail": "Trong từ <span class='exp-highlight-green'>learn</span>, nhóm chữ cái 'ear' được phát âm là nguyên âm dài <span class='exp-highlight-green'>/ɜː/</span>."}, "whyWrong": [{"word": "natural", "reason": "đuôi 'al' phát âm là âm schwa lướt /əl/."}, {"word": "assistant", "reason": "chữ 'a' đầu câu không nhấn trọng âm, phát âm là /ə/."}, {"word": "ability", "reason": "chữ 'a' mở đầu không mang trọng âm, phát âm là /ə/."}]}}, {"id": 3, "question": "Choose the word whose underlined part is pronounced differently from the others:", "options": [{"key": "A", "text": "fut<u>ure</u>", "raw": "future"}, {"key": "B", "text": "ret<u>ur</u>n", "raw": "return"}, {"key": "C", "text": "pict<u>ure</u>", "raw": "picture"}, {"key": "D", "text": "Cult<u>ure</u>", "raw": "Culture"}], "correct": "B", "explanation": {"translation": "Chọn từ có phần gạch chân phát âm khác với các từ còn lại.", "cards": [{"word": "future", "isCorrect": false, "badgeText": "/ə/ (đuôi -ure)", "badgeType": "badge-structure", "meaning": "= tương lai (/ˈfjuː.tʃər/)"}, {"word": "return", "isCorrect": true, "badgeText": "/ɜː/ - nguyên âm dài", "badgeType": "badge-correct", "meaning": "= trở về, quay lại (/rɪˈtɜːn/)"}, {"word": "picture", "isCorrect": false, "badgeText": "/ə/ (đuôi -ure)", "badgeType": "badge-structure", "meaning": "= bức tranh, bức ảnh (/ˈpɪk.tʃər/)"}, {"word": "Culture", "isCorrect": false, "badgeText": "/ə/ (đuôi -ure)", "badgeType": "badge-structure", "meaning": "= văn hóa (/ˈkʌl.tʃər/)"}], "whyCorrect": {"ruleTitle": "Quy tắc phát âm đuôi -ure và gốc từ -urn", "detail": "Từ <span class='exp-highlight-green'>return</span> có trọng âm rơi vào âm tiết thứ hai 'turn', phát âm là <span class='exp-highlight-green'>/ɜː/</span> kéo dài."}, "whyWrong": [{"word": "future", "reason": "đuôi '-ure' không nhận trọng âm nên đọc nhẹ là /tʃər/ (chứa âm /ə/)."}, {"word": "picture", "reason": "đuôi '-ure' đọc nhẹ là /tʃər/ (chứa âm /ə/)."}, {"word": "Culture", "reason": "đuôi '-ure' đọc nhẹ là /tʃər/ (chứa âm /ə/)."}]}}, {"id": 4, "question": "Choose the word whose underlined part is pronounced differently from the others:", "options": [{"key": "A", "text": "Hol<u>i</u>day", "raw": "Holiday"}, {"key": "B", "text": "comput<u>er</u>", "raw": "computer"}, {"key": "C", "text": "<u>a</u>fraid", "raw": "afraid"}, {"key": "D", "text": "d<u>ir</u>ty", "raw": "dirty"}], "correct": "D", "explanation": {"translation": "Chọn từ có phần gạch chân phát âm khác với các từ còn lại.", "cards": [{"word": "Holiday", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= ngày nghỉ lễ (/ˈhɒl.ə.deɪ/)"}, {"word": "computer", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= máy vi tính (/kəmˈpjuː.tər/)"}, {"word": "afraid", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= sợ hãi, e ngại (/əˈfreɪd/)"}, {"word": "dirty", "isCorrect": true, "badgeText": "/ɜː/ - nguyên âm dài", "badgeType": "badge-correct", "meaning": "= dơ bẩn, không sạch (/ˈdɜː.ti/)"}], "whyCorrect": {"ruleTitle": "Nhóm chữ 'ir' mang trọng âm chính", "detail": "Trong từ <span class='exp-highlight-green'>dirty</span>, tổ hợp 'ir' đứng trong âm tiết nhấn trọng âm nên được phát âm là nguyên âm dài <span class='exp-highlight-green'>/ɜː/</span>."}, "whyWrong": [{"word": "Holiday", "reason": "chữ 'i' ở âm tiết không nhấn trọng âm phát âm thành /ə/."}, {"word": "computer", "reason": "đuôi 'er' không mang trọng âm, đọc là /ər/ (âm /ə/)."}, {"word": "afraid", "reason": "chữ cái 'a' đứng đầu không mang trọng âm, đọc lướt là /ə/."}]}}, {"id": 5, "question": "Choose the word whose underlined part is pronounced differently from the others:", "options": [{"key": "A", "text": "Ent<u>er</u>", "raw": "Enter"}, {"key": "B", "text": "s<u>er</u>ve", "raw": "serve"}, {"key": "C", "text": "pref<u>er</u>", "raw": "prefer"}, {"key": "D", "text": "em<u>er</u>ge", "raw": "emerge"}], "correct": "A", "explanation": {"translation": "Chọn từ có phần gạch chân phát âm khác với các từ còn lại.", "cards": [{"word": "Enter", "isCorrect": true, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-correct", "meaning": "= đi vào, nhập vào (/ˈen.tər/)"}, {"word": "serve", "isCorrect": false, "badgeText": "/ɜː/ - nguyên âm dài", "badgeType": "badge-structure", "meaning": "= phục vụ (/sɜːv/)"}, {"word": "prefer", "isCorrect": false, "badgeText": "/ɜː/ - nguyên âm dài", "badgeType": "badge-structure", "meaning": "= thích hơn (/prɪˈfɜːr/)"}, {"word": "emerge", "isCorrect": false, "badgeText": "/ɜː/ - nguyên âm dài", "badgeType": "badge-structure", "meaning": "= xuất hiện, nhô lên (/ɪˈmɜːdʒ/)"}], "whyCorrect": {"ruleTitle": "Đuôi 'er' ở âm tiết không mang trọng âm", "detail": "Từ <span class='exp-highlight-green'>Enter</span> có trọng âm rơi vào âm tiết đầu 'En-', do đó đuôi 'er' phát âm là <span class='exp-highlight-green'>/ə/</span> ngắn. 3 từ còn lại đều có 'er' mang trọng âm chính nên phát âm là /ɜː/."}, "whyWrong": [{"word": "serve", "reason": "từ 1 âm tiết, 'er' đọc là nguyên âm dài /ɜː/."}, {"word": "prefer", "reason": "trọng âm rơi vào âm tiết 2 '-fer', 'er' phát âm là /ɜː/."}, {"word": "emerge", "reason": "trọng âm rơi vào âm tiết 2 '-merge', 'er' phát âm là /ɜː/."}]}}, {"id": 6, "question": "Choose the word whose underlined part is pronounced differently from the others:", "options": [{"key": "A", "text": "Act<u>or</u>", "raw": "Actor"}, {"key": "B", "text": "n<u>er</u>vous", "raw": "nervous"}, {"key": "C", "text": "liter<u>a</u>cy", "raw": "literacy"}, {"key": "D", "text": "inf<u>or</u>mation", "raw": "information"}], "correct": "B", "explanation": {"translation": "Chọn từ có phần gạch chân phát âm khác với các từ còn lại.", "cards": [{"word": "Actor", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= diễn viên nam (/ˈæk.tər/)"}, {"word": "nervous", "isCorrect": true, "badgeText": "/ɜː/ - nguyên âm dài", "badgeType": "badge-correct", "meaning": "= lo lắng, bồn chồn (/ˈnɜː.vəs/)"}, {"word": "literacy", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= sự biết chữ (/ˈlɪt.ər.ə.si/)"}, {"word": "information", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= thông tin (/ˌɪn.fəˈmeɪ.ʃən/)"}], "whyCorrect": {"ruleTitle": "Âm tiết 'er' mang trọng âm", "detail": "Từ <span class='exp-highlight-green'>nervous</span> có 'er' nằm ở âm tiết đầu tiên nhận trọng âm, phát âm là <span class='exp-highlight-green'>/ɜː/</span>."}, "whyWrong": [{"word": "Actor", "reason": "đuôi 'or' không nhấn trọng âm, đọc là /ər/ (âm /ə/)."}, {"word": "literacy", "reason": "chữ 'a' ở âm tiết thứ 3 không mang trọng âm, đọc là /ə/."}, {"word": "information", "reason": "nhóm 'or' ở âm tiết thứ hai đọc lướt thành /ə/."}]}}, {"id": 7, "question": "Choose the word whose underlined part is pronounced differently from the others:", "options": [{"key": "A", "text": "Lab<u>el</u>", "raw": "Label"}, {"key": "B", "text": "abs<u>en</u>ce", "raw": "absence"}, {"key": "C", "text": "b<u>el</u>l", "raw": "bell"}, {"key": "D", "text": "nutri<u>en</u>t", "raw": "nutrient"}], "correct": "C", "explanation": {"translation": "Chọn từ có phần gạch chân phát âm khác với các từ còn lại.", "cards": [{"word": "Label", "isCorrect": false, "badgeText": "/əl/ (/ə/)", "badgeType": "badge-structure", "meaning": "= nhãn dán, mác (/ˈleɪ.bəl/)"}, {"word": "absence", "isCorrect": false, "badgeText": "/ən/ (/ə/)", "badgeType": "badge-structure", "meaning": "= sự vắng mặt (/ˈæb.səns/)"}, {"word": "bell", "isCorrect": true, "badgeText": "/e/ - nguyên âm ngắn", "badgeType": "badge-correct", "meaning": "= cái chuông (/bel/)"}, {"word": "nutrient", "isCorrect": false, "badgeText": "/ən/ (/ə/)", "badgeType": "badge-structure", "meaning": "= chất dinh dưỡng (/ˈnjuː.tri.ənt/)"}], "whyCorrect": {"ruleTitle": "Phân biệt nguyên âm /e/ và schwa /ə/", "detail": "Từ <span class='exp-highlight-green'>bell</span> có chữ 'e' nằm trong âm tiết được nhấn giọng, phát âm là nguyên âm ngắn <span class='exp-highlight-green'>/e/</span>."}, "whyWrong": [{"word": "Label", "reason": "đuôi 'el' phát âm là âm lướt /əl/ (chứa schwa /ə/)."}, {"word": "absence", "reason": "đuôi 'en' phát âm là /ən/ (chứa schwa /ə/)."}, {"word": "nutrient", "reason": "đuôi 'en' phát âm là /ənt/ (chứa schwa /ə/)."}]}}, {"id": 8, "question": "Choose the word whose underlined part is pronounced differently from the others:", "options": [{"key": "A", "text": "V<u>er</u>b", "raw": "Verb"}, {"key": "B", "text": "w<u>or</u>se", "raw": "worse"}, {"key": "C", "text": "w<u>or</u>d", "raw": "word"}, {"key": "D", "text": "pepp<u>er</u>", "raw": "pepper"}], "correct": "D", "explanation": {"translation": "Chọn từ có phần gạch chân phát âm khác với các từ còn lại.", "cards": [{"word": "Verb", "isCorrect": false, "badgeText": "/ɜː/ - nguyên âm dài", "badgeType": "badge-structure", "meaning": "= động từ (/vɜːb/)"}, {"word": "worse", "isCorrect": false, "badgeText": "/ɜː/ - nguyên âm dài", "badgeType": "badge-structure", "meaning": "= tồi tệ hơn (/wɜːs/)"}, {"word": "word", "isCorrect": false, "badgeText": "/ɜː/ - nguyên âm dài", "badgeType": "badge-structure", "meaning": "= từ ngữ (/wɜːd/)"}, {"word": "pepper", "isCorrect": true, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-correct", "meaning": "= hạt tiêu, ớt chuông (/ˈpep.ər/)"}], "whyCorrect": {"ruleTitle": "Đuôi 'er' không nhấn trọng âm", "detail": "Từ <span class='exp-highlight-green'>pepper</span> có trọng âm rơi vào âm tiết đầu, đuôi 'er' đọc nhẹ thành <span class='exp-highlight-green'>/ə/</span>. Ba từ A, B, C đều có phần gạch chân phát âm là /ɜː/ dài."}, "whyWrong": [{"word": "Verb", "reason": "tổ hợp 'er' phát âm là /ɜː/."}, {"word": "worse", "reason": "sau âm 'w', tổ hợp 'or' phát âm là /ɜː/."}, {"word": "word", "reason": "sau âm 'w', tổ hợp 'or' phát âm là /ɜː/."}]}}, {"id": 9, "question": "Choose the word whose underlined part is pronounced differently from the others:", "options": [{"key": "A", "text": "<u>a</u>bout", "raw": "about"}, {"key": "B", "text": "<u>a</u>ffect", "raw": "affect"}, {"key": "C", "text": "<u>a</u>gree", "raw": "agree"}, {"key": "D", "text": "<u>a</u>ny", "raw": "any"}], "correct": "D", "explanation": {"translation": "Chọn từ có phần gạch chân phát âm khác với các từ còn lại.", "cards": [{"word": "about", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= về, khoảng chừng (/əˈbaʊt/)"}, {"word": "affect", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= ảnh hưởng đến (/əˈfekt/)"}, {"word": "agree", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= đồng ý, tán thành (/əˈɡriː/)"}, {"word": "any", "isCorrect": true, "badgeText": "/e/ - nguyên âm ngắn", "badgeType": "badge-correct", "meaning": "= bất kỳ (/ˈen.i/)"}], "whyCorrect": {"ruleTitle": "Trường hợp đặc biệt phát âm chữ cái 'a'", "detail": "Trong từ <span class='exp-highlight-green'>any</span>, chữ 'a' được phát âm là nguyên âm ngắn <span class='exp-highlight-green'>/e/</span>. Ở các từ còn lại, 'a' đứng đầu âm tiết không mang trọng âm nên phát âm là /ə/."}, "whyWrong": [{"word": "about", "reason": "chữ 'a' mở đầu đọc lướt là schwa /ə/."}, {"word": "affect", "reason": "chữ 'a' mở đầu đọc lướt là schwa /ə/."}, {"word": "agree", "reason": "chữ 'a' mở đầu đọc lướt là schwa /ə/."}]}}, {"id": 10, "question": "Choose the word whose underlined part is pronounced differently from the others:", "options": [{"key": "A", "text": "F<u>ur</u>", "raw": "Fur"}, {"key": "B", "text": "f<u>u</u>n", "raw": "fun"}, {"key": "C", "text": "r<u>u</u>n", "raw": "run"}, {"key": "D", "text": "l<u>u</u>cky", "raw": "lucky"}], "correct": "A", "explanation": {"translation": "Chọn từ có phần gạch chân phát âm khác với các từ còn lại.", "cards": [{"word": "Fur", "isCorrect": true, "badgeText": "/ɜː/ - nguyên âm dài", "badgeType": "badge-correct", "meaning": "= lông thú (/fɜːr/)"}, {"word": "fun", "isCorrect": false, "badgeText": "/ʌ/ - âm á ngắn", "badgeType": "badge-structure", "meaning": "= niềm vui, vui vẻ (/fʌn/)"}, {"word": "run", "isCorrect": false, "badgeText": "/ʌ/ - âm á ngắn", "badgeType": "badge-structure", "meaning": "= chạy (/rʌn/)"}, {"word": "lucky", "isCorrect": false, "badgeText": "/ʌ/ - âm á ngắn", "badgeType": "badge-structure", "meaning": "= may mắn (/ˈlʌk.i/)"}], "whyCorrect": {"ruleTitle": "Phân biệt nguyên âm /ɜː/ dài và /ʌ/ ngắn", "detail": "Từ <span class='exp-highlight-green'>Fur</span> có tổ hợp 'ur' được phát âm là nguyên âm dài <span class='exp-highlight-green'>/ɜː/</span>. Ba đáp án B, C, D đều có chữ cái 'u' đứng giữa các phụ âm phát âm là /ʌ/."}, "whyWrong": [{"word": "fun", "reason": "chữ 'u' phát âm là /ʌ/ ngắn."}, {"word": "run", "reason": "chữ 'u' phát âm là /ʌ/ ngắn."}, {"word": "lucky", "reason": "chữ 'u' phát âm là /ʌ/ ngắn."}]}}, {"id": 11, "question": "Choose the word whose underlined part is pronounced differently from the others:", "options": [{"key": "A", "text": "B<u>ir</u>d", "raw": "Bird"}, {"key": "B", "text": "fam<u>i</u>ly", "raw": "family"}, {"key": "C", "text": "h<u>u</u>sband", "raw": "husband"}, {"key": "D", "text": "Sat<u>ur</u>day", "raw": "Saturday"}], "correct": "A", "explanation": {"translation": "Chọn từ có phần gạch chân phát âm khác với các từ còn lại.", "cards": [{"word": "Bird", "isCorrect": true, "badgeText": "/ɜː/ - nguyên âm dài", "badgeType": "badge-correct", "meaning": "= con chim (/bɜːd/)"}, {"word": "family", "isCorrect": false, "badgeText": "/ə/ (hoặc /ɪ/ nhẹ)", "badgeType": "badge-structure", "meaning": "= gia đình (/ˈfæm.ə.li/)"}, {"word": "husband", "isCorrect": false, "badgeText": "/ʌ/ (nguyên âm ngắn)", "badgeType": "badge-structure", "meaning": "= người chồng (/ˈhʌz.bənd/)"}, {"word": "Saturday", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= thứ Bảy (/ˈsæt.ə.deɪ/)"}], "whyCorrect": {"ruleTitle": "Nguyên âm dài /ɜː/ đối lập các nguyên âm ngắn", "detail": "Từ <span class='exp-highlight-green'>Bird</span> có tổ hợp 'ir' được phát âm là nguyên âm dài <span class='exp-highlight-green'>/ɜː/</span>, trong khi các từ còn lại mang âm ngắn và âm lướt /ə/."}, "whyWrong": [{"word": "family", "reason": "chữ 'i' ở âm tiết không mang trọng âm đọc nhẹ là /ə/."}, {"word": "husband", "reason": "chữ 'u' phát âm là nguyên âm ngắn /ʌ/."}, {"word": "Saturday", "reason": "tổ hợp 'ur' ở âm tiết thứ 2 đọc là âm schwa /ə/."}]}}, {"id": 12, "question": "Choose the word whose underlined part is pronounced differently from the others:", "options": [{"key": "A", "text": "G<u>ir</u>l", "raw": "Girl"}, {"key": "B", "text": "f<u>ir</u>st", "raw": "first"}, {"key": "C", "text": "f<u>i</u>sh", "raw": "fish"}, {"key": "D", "text": "th<u>ir</u>sty", "raw": "thirsty"}], "correct": "C", "explanation": {"translation": "Chọn từ có phần gạch chân phát âm khác với các từ còn lại.", "cards": [{"word": "Girl", "isCorrect": false, "badgeText": "/ɜː/ - nguyên âm dài", "badgeType": "badge-structure", "meaning": "= cô gái (/ɡɜːl/)"}, {"word": "first", "isCorrect": false, "badgeText": "/ɜː/ - nguyên âm dài", "badgeType": "badge-structure", "meaning": "= đầu tiên, thứ nhất (/fɜːst/)"}, {"word": "fish", "isCorrect": true, "badgeText": "/ɪ/ - nguyên âm ngắn", "badgeType": "badge-correct", "meaning": "= con cá (/fɪʃ/)"}, {"word": "thirsty", "isCorrect": false, "badgeText": "/ɜː/ - nguyên âm dài", "badgeType": "badge-structure", "meaning": "= khát nước (/ˈθɜː.sti/)"}], "whyCorrect": {"ruleTitle": "Phân biệt nguyên âm /ɪ/ ngắn và /ɜː/ dài", "detail": "Từ <span class='exp-highlight-green'>fish</span> có chữ 'i' phát âm là nguyên âm ngắn <span class='exp-highlight-green'>/ɪ/</span>. Ba từ còn lại đều có 'ir' đi liền nhau phát âm thành /ɜː/ dài."}, "whyWrong": [{"word": "Girl", "reason": "nhóm 'ir' phát âm là /ɜː/."}, {"word": "first", "reason": "nhóm 'ir' phát âm là /ɜː/."}, {"word": "thirsty", "reason": "nhóm 'ir' phát âm là /ɜː/."}]}}, {"id": 13, "question": "Choose the word whose underlined part is pronounced differently from the others:", "options": [{"key": "A", "text": "Pref<u>er</u>", "raw": "Prefer"}, {"key": "B", "text": "bett<u>er</u>", "raw": "better"}, {"key": "C", "text": "teach<u>er</u>", "raw": "teacher"}, {"key": "D", "text": "work<u>er</u>", "raw": "worker"}], "correct": "A", "explanation": {"translation": "Chọn từ có phần gạch chân phát âm khác với các từ còn lại.", "cards": [{"word": "Prefer", "isCorrect": true, "badgeText": "/ɜː/ - mang trọng âm", "badgeType": "badge-correct", "meaning": "= thích hơn (/prɪˈfɜːr/)"}, {"word": "better", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= tốt hơn (/ˈbet.ər/)"}, {"word": "teacher", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= giáo viên (/ˈtiː.tʃər/)"}, {"word": "worker", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= công nhân (/ˈwɜː.kər/)"}], "whyCorrect": {"ruleTitle": "Trọng âm quyết định cách phát âm đuôi 'er'", "detail": "Từ <span class='exp-highlight-green'>Prefer</span> có trọng âm rơi vào âm tiết thứ hai, do đó đuôi 'er' đọc là nguyên âm dài <span class='exp-highlight-green'>/ɜː/</span>. Ba từ còn lại trọng âm rơi vào âm tiết đầu nên đuôi 'er' chỉ là âm nhẹ /ə/."}, "whyWrong": [{"word": "better", "reason": "đuôi 'er' không nhận trọng âm, phát âm là /ər/ (âm /ə/)."}, {"word": "teacher", "reason": "đuôi 'er' không nhận trọng âm, phát âm là /ər/ (âm /ə/)."}, {"word": "worker", "reason": "đuôi 'er' không nhận trọng âm, phát âm là /ər/ (âm /ə/)."}]}}, {"id": 14, "question": "Choose the word whose underlined part is pronounced differently from the others:", "options": [{"key": "A", "text": "Strang<u>er</u>", "raw": "Stranger"}, {"key": "B", "text": "sing<u>er</u>", "raw": "singer"}, {"key": "C", "text": "t<u>er</u>m", "raw": "term"}, {"key": "D", "text": "en<u>er</u>gy", "raw": "energy"}], "correct": "C", "explanation": {"translation": "Chọn từ có phần gạch chân phát âm khác với các từ còn lại.", "cards": [{"word": "Stranger", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= người lạ (/ˈstreɪn.dʒər/)"}, {"word": "singer", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= ca sĩ (/ˈsɪŋ.ər/)"}, {"word": "term", "isCorrect": true, "badgeText": "/ɜː/ - nguyên âm dài", "badgeType": "badge-correct", "meaning": "= học kỳ, thuật ngữ (/tɜːm/)"}, {"word": "energy", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= năng lượng (/ˈen.ə.dʒi/)"}], "whyCorrect": {"ruleTitle": "Từ 1 âm tiết có chứa tổ hợp 'er'", "detail": "Từ <span class='exp-highlight-green'>term</span> là từ một âm tiết, tổ hợp 'er' được phát âm là nguyên âm dài <span class='exp-highlight-green'>/ɜː/</span>. Ba từ còn lại 'er' đứng ở vị trí không mang trọng âm nên phát âm là /ə/."}, "whyWrong": [{"word": "Stranger", "reason": "đuôi 'er' đọc lướt thành /ər/ (âm /ə/)."}, {"word": "singer", "reason": "đuôi 'er' đọc lướt thành /ər/ (âm /ə/)."}, {"word": "energy", "reason": "âm giữa 'er' đọc lướt là schwa /ə/."}]}}, {"id": 15, "question": "Choose the word whose underlined part is pronounced differently from the others:", "options": [{"key": "A", "text": "abs<u>en</u>t", "raw": "absent"}, {"key": "B", "text": "governm<u>en</u>t", "raw": "government"}, {"key": "C", "text": "depend<u>en</u>t", "raw": "dependent"}, {"key": "D", "text": "<u>e</u>njoy", "raw": "enjoy"}], "correct": "D", "explanation": {"translation": "Chọn từ có phần gạch chân phát âm khác với các từ còn lại.", "cards": [{"word": "absent", "isCorrect": false, "badgeText": "/ən/ (âm /ə/)", "badgeType": "badge-structure", "meaning": "= vắng mặt (/ˈæb.sənt/)"}, {"word": "government", "isCorrect": false, "badgeText": "/ən/ (âm /ə/)", "badgeType": "badge-structure", "meaning": "= chính phủ (/ˈɡʌv.ən.mənt/)"}, {"word": "dependent", "isCorrect": false, "badgeText": "/ən/ (âm /ə/)", "badgeType": "badge-structure", "meaning": "= phụ thuộc (/dɪˈpen.dənt/)"}, {"word": "enjoy", "isCorrect": true, "badgeText": "/ɪ/ - nguyên âm ngắn", "badgeType": "badge-correct", "meaning": "= thích thú, tận hưởng (/ɪnˈdʒɔɪ/)"}], "whyCorrect": {"ruleTitle": "Phân biệt nguyên âm /ɪ/ và đuôi chứa schwa /ə/", "detail": "Từ <span class='exp-highlight-green'>enjoy</span> có tiền tố 'en-' đứng trước âm mang trọng âm, được phát âm là <span class='exp-highlight-green'>/ɪn/</span> (chứa âm /ɪ/). Ba từ còn lại đuôi '-ent' đọc là /ənt/ chứa âm schwa /ə/."}, "whyWrong": [{"word": "absent", "reason": "đuôi 'ent' phát âm là /ənt/."}, {"word": "government", "reason": "hậu tố 'ment' phát âm là /mənt/ chứa âm schwa /ə/."}, {"word": "dependent", "reason": "đuôi 'ent' phát âm là /ənt/."}]}}, {"id": 16, "question": "Choose the word whose underlined part is pronounced differently from the others:", "options": [{"key": "A", "text": "Lett<u>er</u>", "raw": "Letter"}, {"key": "B", "text": "<u>ea</u>rn", "raw": "earn"}, {"key": "C", "text": "p<u>u</u>rple", "raw": "purple"}, {"key": "D", "text": "b<u>ir</u>thday", "raw": "birthday"}], "correct": "A", "explanation": {"translation": "Chọn từ có phần gạch chân phát âm khác với các từ còn lại.", "cards": [{"word": "Letter", "isCorrect": true, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-correct", "meaning": "= lá thư, chữ cái (/ˈlet.ər/)"}, {"word": "earn", "isCorrect": false, "badgeText": "/ɜː/ - nguyên âm dài", "badgeType": "badge-structure", "meaning": "= kiếm được (tiền) (/ɜːn/)"}, {"word": "purple", "isCorrect": false, "badgeText": "/ɜː/ - nguyên âm dài", "badgeType": "badge-structure", "meaning": "= màu tím (/ˈpɜː.pəl/)"}, {"word": "birthday", "isCorrect": false, "badgeText": "/ɜː/ - nguyên âm dài", "badgeType": "badge-structure", "meaning": "= sinh nhật (/ˈbɜːθ.deɪ/)"}], "whyCorrect": {"ruleTitle": "Đuôi 'er' không nhấn trọng âm", "detail": "Từ <span class='exp-highlight-green'>Letter</span> có trọng âm rơi vào âm tiết đầu 'Let-', đuôi 'er' đọc nhẹ thành <span class='exp-highlight-green'>/ə/</span>. Ba từ còn lại (earn, purple, birthday) đều có phần gạch chân phát âm là nguyên âm dài /ɜː/."}, "whyWrong": [{"word": "earn", "reason": "tổ hợp 'ear' phát âm là nguyên âm dài /ɜː/."}, {"word": "purple", "reason": "tổ hợp 'ur' nhận trọng âm phát âm là /ɜː/."}, {"word": "birthday", "reason": "tổ hợp 'ir' nhận trọng âm phát âm là /ɜː/."}]}}, {"id": 17, "question": "Choose the word whose underlined part is pronounced differently from the others:", "options": [{"key": "A", "text": "M<u>a</u>n", "raw": "Man"}, {"key": "B", "text": "wom<u>a</u>n", "raw": "woman"}, {"key": "C", "text": "account<u>a</u>nt", "raw": "accountant"}, {"key": "D", "text": "highl<u>a</u>nd", "raw": "highland"}], "correct": "A", "explanation": {"translation": "Chọn từ có phần gạch chân phát âm khác với các từ còn lại.", "cards": [{"word": "Man", "isCorrect": true, "badgeText": "/æ/ - âm a bẹt", "badgeType": "badge-correct", "meaning": "= người đàn ông (/mæn/)"}, {"word": "woman", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= người phụ nữ (/ˈwʊm.ən/)"}, {"word": "accountant", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= nhân viên kế toán (/əˈkaʊn.tənt/)"}, {"word": "highland", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= vùng cao nguyên (/ˈhaɪ.lənd/)"}], "whyCorrect": {"ruleTitle": "Phân biệt nguyên âm /æ/ và schwa /ə/", "detail": "Từ <span class='exp-highlight-green'>Man</span> là từ 1 âm tiết, chữ 'a' được phát âm là âm a bẹt <span class='exp-highlight-green'>/æ/</span> (mở rộng khẩu hình). Ở các từ B, C, D chữ 'a' nằm ở vị trí không nhấn trọng âm nên biến thành âm lướt nhẹ /ə/."}, "whyWrong": [{"word": "woman", "reason": "đuôi 'man' không mang trọng âm đọc là /mən/ (chứa /ə/)."}, {"word": "accountant", "reason": "hậu tố 'ant' không mang trọng âm đọc là /ənt/ (chứa /ə/)."}, {"word": "highland", "reason": "đuôi 'land' không mang trọng âm đọc là /lənd/ (chứa /ə/)."}]}}, {"id": 18, "question": "Choose the word whose underlined part is pronounced differently from the others:", "options": [{"key": "A", "text": "Col<u>or</u>", "raw": "Color"}, {"key": "B", "text": "<u>a</u>go", "raw": "ago"}, {"key": "C", "text": "c<u>ur</u>ly", "raw": "curly"}, {"key": "D", "text": "s<u>u</u>rprise", "raw": "surprise"}], "correct": "C", "explanation": {"translation": "Chọn từ có phần gạch chân phát âm khác với các từ còn lại.", "cards": [{"word": "Color", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= màu sắc (/ˈkʌl.ər/)"}, {"word": "ago", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= cách đây, trước đây (/əˈɡəʊ/)"}, {"word": "curly", "isCorrect": true, "badgeText": "/ɜː/ - nguyên âm dài", "badgeType": "badge-correct", "meaning": "= tóc xoăn, quăn (/ˈkɜː.li/)"}, {"word": "surprise", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= sự ngạc nhiên (/səˈpraɪz/)"}], "whyCorrect": {"ruleTitle": "Tổ hợp 'ur' mang trọng âm chính", "detail": "Từ <span class='exp-highlight-green'>curly</span> có tổ hợp 'ur' nằm trong âm tiết mang trọng âm nên phát âm là nguyên âm dài <span class='exp-highlight-green'>/ɜː/</span>. Các từ còn lại phần gạch chân đều được phát âm là /ə/."}, "whyWrong": [{"word": "Color", "reason": "đuôi 'or' không nhận trọng âm, đọc là /ər/ (âm /ə/)."}, {"word": "ago", "reason": "chữ 'a' mở đầu đọc lướt thành schwa /ə/."}, {"word": "surprise", "reason": "âm tiết đầu 'sur-' không nhấn trọng âm, đọc là /sə/ (âm /ə/)."}]}}, {"id": 19, "question": "Choose the word whose underlined part is pronounced differently from the others:", "options": [{"key": "A", "text": "l<u>ea</u>rn", "raw": "learn"}, {"key": "B", "text": "n<u>ea</u>r", "raw": "near"}, {"key": "C", "text": "<u>ea</u>rth", "raw": "earth"}, {"key": "D", "text": "res<u>ea</u>rch", "raw": "research"}], "correct": "B", "explanation": {"translation": "Chọn từ có phần gạch chân phát âm khác với các từ còn lại.", "cards": [{"word": "learn", "isCorrect": false, "badgeText": "/ɜː/ - nguyên âm dài", "badgeType": "badge-structure", "meaning": "= học tập (/lɜːn/)"}, {"word": "near", "isCorrect": true, "badgeText": "/ɪə/ - nguyên âm đôi", "badgeType": "badge-correct", "meaning": "= gần gũi, ở gần (/nɪər/)"}, {"word": "earth", "isCorrect": false, "badgeText": "/ɜː/ - nguyên âm dài", "badgeType": "badge-structure", "meaning": "= Trái Đất (/ɜːθ/)"}, {"word": "research", "isCorrect": false, "badgeText": "/ɜː/ - nguyên âm dài", "badgeType": "badge-structure", "meaning": "= nghiên cứu (/rɪˈsɜːtʃ/)"}], "whyCorrect": {"ruleTitle": "Phân biệt nguyên âm đôi /ɪə/ và nguyên âm đơn /ɜː/", "detail": "Từ <span class='exp-highlight-green'>near</span> có tổ hợp 'ear' được phát âm là nguyên âm đôi <span class='exp-highlight-green'>/ɪə/</span> (hoặc /ɪr/). Ba từ learn, earth, research đều có 'ear' phát âm là nguyên âm dài /ɜː/."}, "whyWrong": [{"word": "learn", "reason": "tổ hợp 'ear' phát âm là /ɜː/."}, {"word": "earth", "reason": "tổ hợp 'ear' phát âm là /ɜː/."}, {"word": "research", "reason": "tổ hợp 'ear' phát âm là /ɜː/."}]}}, {"id": 20, "question": "Choose the word whose underlined part is pronounced differently from the others:", "options": [{"key": "A", "text": "c<u>o</u>llect", "raw": "collect"}, {"key": "B", "text": "conc<u>e</u>rn", "raw": "concern"}, {"key": "C", "text": "conc<u>e</u>rt", "raw": "concert"}, {"key": "D", "text": "c<u>o</u>mbine", "raw": "combine"}], "correct": "B", "explanation": {"translation": "Chọn từ có phần gạch chân phát âm khác với các từ còn lại.", "cards": [{"word": "collect", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= sưu tầm, thu thập (/kəˈlekt/)"}, {"word": "concern", "isCorrect": true, "badgeText": "/ɜː/ - nguyên âm dài", "badgeType": "badge-correct", "meaning": "= mối lo âu, quan tâm (/kənˈsɜːn/)"}, {"word": "concert", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= buổi hòa nhạc (/ˈkɒn.sət/)"}, {"word": "combine", "isCorrect": false, "badgeText": "/ə/ - schwa ngắn", "badgeType": "badge-structure", "meaning": "= kết hợp (/kəmˈbaɪn/)"}], "whyCorrect": {"ruleTitle": "Tổ hợp 'er' mang trọng âm chính", "detail": "Từ <span class='exp-highlight-green'>concern</span> có trọng âm rơi vào âm tiết thứ hai '-cern', nên chữ 'e' (hoặc 'er') được phát âm là nguyên âm dài <span class='exp-highlight-green'>/ɜː/</span>. Ba từ còn lại phần gạch chân đều phát âm là âm schwa nhẹ /ə/."}, "whyWrong": [{"word": "collect", "reason": "chữ 'o' ở âm tiết đầu không mang trọng âm, đọc là /ə/."}, {"word": "concert", "reason": "đuôi 'ert' không nhận trọng âm, đọc nhẹ là /sət/ (chứa âm /ə/)."}, {"word": "combine", "reason": "chữ 'o' ở âm tiết đầu không mang trọng âm, đọc là /ə/."}]}}];
+    const userAnswers = {};
+
+    /* WEB AUDIO API */
+    let audioCtx = null;
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playCorrectSound() {
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc1.type = 'sine';
+        osc2.type = 'triangle';
+
+        osc1.frequency.setValueAtTime(1046.50, now);
+        osc1.frequency.exponentialRampToValueAtTime(1318.51, now + 0.12);
+
+        osc2.frequency.setValueAtTime(1318.51, now);
+        osc2.frequency.exponentialRampToValueAtTime(1567.98, now + 0.12);
+
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.65);
+
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc1.start(now);
+        osc2.start(now);
+        osc1.stop(now + 0.65);
+        osc2.stop(now + 0.65);
+      } catch (e) {
+        console.log("Audio err:", e);
+      }
+    }
+
+    function playWrongSound() {
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(280, now);
+        osc.frequency.linearRampToValueAtTime(190, now + 0.15);
+        osc.frequency.linearRampToValueAtTime(130, now + 0.35);
+
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.45);
+      } catch (e) {
+        console.log("Audio err:", e);
+      }
+    }
+
+    function launchConfetti() {
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 70,
+          spread: 75,
+          origin: { y: 0.72 },
+          colors: ['#8854C0', '#FDCB6E', '#00C9A7', '#FF4757', '#0984E3']
+        });
+      }
+    }
+
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function updateProgressBar() {
+      const answeredCount = Object.keys(userAnswers).length;
+      let correctCount = 0;
+      quizData.forEach(q => {
+        if (userAnswers[q.id] === q.correct) correctCount++;
+      });
+
+      const total = quizData.length;
+      const percent = (answeredCount / total) * 100;
+
+      document.getElementById('star-score-text').textContent = `${correctCount} / ${total}`;
+      document.getElementById('progress-ratio-text').textContent = `${answeredCount} / ${total}`;
+      document.getElementById('progress-bar-fill').style.width = `${percent}%`;
+    }
+
+    function renderQuiz() {
+      const container = document.getElementById('quiz-container');
+      container.innerHTML = '';
+
+      quizData.forEach((q, idx) => {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.id = `q-card-${q.id}`;
+
+        const shuffledOptions = shuffleArray(q.options);
+
+        const optionsHTML = `
+          <div class="options-grid ${shuffledOptions.length === 4 ? 'two-cols' : ''}">
+            ${shuffledOptions.map(opt => `
+              <button type="button" class="option-btn" id="btn-${q.id}-${opt.key}" onclick="handleSelectOption(${q.id}, '${opt.key}')">
+                <span class="option-key">${opt.key}</span>
+                <span class="option-text">${opt.text}</span>
+              </button>
+            `).join('')}
+          </div>
+        `;
+
+        const exp = q.explanation;
+        const explanationHTML = `
+          <div class="explanation-box" id="exp-${q.id}" style="display: none;">
+            <div class="exp-title">⚡ GIẢI THÍCH CHI TIẾT</div>
+            
+            <!-- Translation Speech Bubble (Image 1 Style) -->
+            <div class="exp-translation-bubble">
+              <span class="icon">💭</span>
+              <span><strong>Dịch:</strong> ${exp.translation}</span>
+            </div>
+
+            <!-- 1. Phân tích 4 đáp án (Grid 2x2 cards) -->
+            <div class="exp-section-title">1. Phân tích 4 đáp án:</div>
+            <div class="analysis-grid">
+              ${exp.cards.map(c => `
+                <div class="analysis-card">
+                  <span class="analysis-word ${c.isCorrect ? 'green' : ''}">${c.word}</span>
+                  <span class="badge-pill ${c.badgeType}">${c.badgeText}</span>
+                  <span class="analysis-meaning">${c.meaning}</span>
+                </div>
+              `).join('')}
+            </div>
+
+            <!-- 2. Tại sao đúng? -->
+            <div class="exp-rule-row">
+              <span class="check-label">2. ✅ TẠI SAO ĐÚNG?</span>
+              <span class="exp-rule-pill">${exp.whyCorrect.ruleTitle}:</span>
+              <span>${exp.whyCorrect.detail}</span>
+            </div>
+
+            <!-- 3. Tại sao sai? -->
+            <div class="exp-wrong-row">
+              <span class="cross-label">3. ❌ TẠI SAO SAI?</span>
+              ${exp.whyWrong.map(w => `
+                <span class="exp-wrong-tag">${w.word}</span> - ${w.reason}
+              `).join(' ')}
+            </div>
+
+          </div>
+        `;
+
+        card.innerHTML = `
+          <div class="question-header">
+            <span class="question-num">Câu ${idx + 1}</span>
+            <span class="question-type-badge">Phát âm (Pronunciation)</span>
+          </div>
+          <div class="question-content"><strong>Exercise:</strong> Choose the word (A, B, C, or D) whose underlined part is pronounced differently from the others:</div>
+          ${optionsHTML}
+          ${explanationHTML}
+        `;
+
+        container.appendChild(card);
+      });
+
+      updateProgressBar();
+    }
+
+    function handleSelectOption(qId, selectedKey) {
+      if (userAnswers[qId] !== undefined) return;
+
+      const q = quizData.find(item => item.id === qId);
+      userAnswers[qId] = selectedKey;
+
+      const isCorrect = (selectedKey === q.correct);
+      const selectedBtn = document.getElementById(`btn-${qId}-${selectedKey}`);
+
+      if (isCorrect) {
+        selectedBtn.classList.add('correct');
+        playCorrectSound();
+        launchConfetti();
+      } else {
+        selectedBtn.classList.add('wrong');
+        playWrongSound();
+        const correctBtn = document.getElementById(`btn-${qId}-${q.correct}`);
+        if (correctBtn) correctBtn.classList.add('correct');
+      }
+
+      q.options.forEach(opt => {
+        const b = document.getElementById(`btn-${qId}-${opt.key}`);
+        if (b) b.disabled = true;
+      });
+
+      const expBox = document.getElementById(`exp-${qId}`);
+      if (expBox) expBox.style.display = 'block';
+
+      updateProgressBar();
+    }
+
+    function submitQuiz() {
+      let score = 0;
+      quizData.forEach(q => {
+        if (userAnswers[q.id] === q.correct) score++;
+      });
+
+      const total = quizData.length;
+      const percentage = (score / total) * 100;
+
+      let emoji = '🌟';
+      let message = '';
+
+      if (percentage < 50) {
+        emoji = '💪';
+        message = '“Điểm lần này chưa cao lắm, con cố gắng đọc kỹ giải thích đáp án và làm lại nha. Cô tin con sẽ làm tốt hơn ở lần sau!”<br><br><strong>— Ms Lê Hằng English —</strong>';
+      } else if (percentage >= 50 && percentage < 90) {
+        emoji = '👏';
+        message = '“Con đã có tiến bộ khá ổn rồi, con cố gắng đọc kỹ giải thích đáp án và làm lại nha. Cô tin con sẽ làm tốt hơn ở lần sau!”<br><br><strong>— Ms Lê Hằng English —</strong>';
+      } else {
+        emoji = '👑';
+        message = '“Làm tốt lắm, con cố gắng ring điểm 10 ở lần sau nha!”<br><br><strong>— Ms Lê Hằng English —</strong>';
+        launchConfetti();
+      }
+
+      document.getElementById('result-emoji').innerHTML = emoji;
+      document.getElementById('result-score').textContent = `${score} / ${total} CÂU ĐÚNG (${Math.round(percentage)}%)`;
+      document.getElementById('result-feedback').innerHTML = message;
+      document.getElementById('result-modal').style.display = 'flex';
+    }
+
+    function retryQuiz() {
+      document.getElementById('result-modal').style.display = 'none';
+      for (const key in userAnswers) {
+        delete userAnswers[key];
+      }
+      renderQuiz();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderQuiz();
+    });
+  </script>
+</body>
+</html>
